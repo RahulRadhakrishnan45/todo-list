@@ -5,7 +5,7 @@ type TaskFilterProps = {
   onFilterChange: (filter: TaskFilter) => void;
 };
 
-function TaskFilter({ filter,onFilterChange }: TaskFilterProps) {
+function TaskFilterComponent({ filter,onFilterChange }: TaskFilterProps) {
   return (
     <div className="flex items-center justify-evenly ">
       <button
@@ -47,4 +47,4 @@ function TaskFilter({ filter,onFilterChange }: TaskFilterProps) {
   );
 }
 
-export default TaskFilter;
+export default TaskFilterComponent;
