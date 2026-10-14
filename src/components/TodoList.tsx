@@ -45,8 +45,16 @@ function TodoList() {
   }
 
   function deleteTask(id: string) {
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
-    toast.success("Task deleted successfully");
+    const selectedTask = tasks.find((task) => task.id === id);
+    if (!selectedTask) return;
+
+    showConfirmation(
+      `Are you sure you want to delete "${selectedTask.title}"?`,
+      () => {
+        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+        toast.success("Task deleted successfully");
+      },
+    );
   }
 
   function startEdit(id: string, title: string) {
@@ -56,7 +64,10 @@ function TodoList() {
 
   function saveEdit(id: string) {
     const trimmedTitle = editTitle.trim();
-    if (trimmedTitle === "") return;
+    if (trimmedTitle === "") {
+      toast.error("Task title cannot be empty");
+      return;
+    }
     setTasks((prevTasks) =>
       prevTasks.map((task) =>
         task.id === id ? { ...task, title: editTitle } : task,
@@ -81,6 +92,45 @@ function TodoList() {
 
   const activeTaskCount = tasks.filter((task) => !task.completed).length;
   const completedCount = tasks.filter((task) => task.completed).length;
+
+  function showConfirmation(message: string, onConfirm: () => void) {
+    toast.custom(
+      (t) => (
+        <div
+          className={`flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-lg ${
+            t.visible ? "animate-enter" : "animate-leave"
+          }`}
+        >
+          <p className="text-sm font-medium text-slate-700">{message}</p>
+
+          <div className="flex shrink-0 gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                toast.dismiss(t.id);
+                onConfirm();
+              }}
+              className="rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white hover:bg-indigo-700"
+            >
+              Confirm
+            </button>
+
+            <button
+              type="button"
+              onClick={() => toast.dismiss(t.id)}
+              className="rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-600 hover:bg-slate-200"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        duration: Infinity,
+        position: "top-center",
+      },
+    );
+  }
 
   return (
     <main className="min-h-screen bg-slate-100 px-4 py-10">
